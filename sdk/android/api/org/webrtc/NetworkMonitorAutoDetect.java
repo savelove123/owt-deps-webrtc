@@ -462,8 +462,8 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
     @SuppressLint("NewApi")
     public void requestMobileNetwork(NetworkCallback networkCallback) {
       NetworkRequest.Builder builder = new NetworkRequest.Builder();
-      builder.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-          .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR);
+      builder.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+    //      .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR);
       connectivityManager.requestNetwork(builder.build(), networkCallback);
     }
 
