@@ -120,7 +120,7 @@ class WebRtcAudioRecord {
     public AudioRecordThread(String name) {
       super(name);
     }
-
+    private boolean isFirstRecord = true;
     @Override
     public void run() {
       Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
@@ -136,11 +136,20 @@ class WebRtcAudioRecord {
         audioTimestamp = new AudioTimestamp();
       }
       while (keepAlive) {
+        if( isFirstRecord){
+          Logging.d( TAG,"AudioRecord.read --start ")  
+        }
         int bytesRead = audioRecord.read(byteBuffer, byteBuffer.capacity());
+        if( isFirstRecord){
+          Logging.d( TAG,"AudioRecord.read --end " + bytesRead)  
+        }
         if (bytesRead == byteBuffer.capacity()) {
           if (microphoneMute) {
             byteBuffer.clear();
             byteBuffer.put(emptyBytes);
+          }
+          if( isFirstRecord){
+            Logging.d( TAG,"microphoneMute" + microphoneMute)  
           }
           // It's possible we've been shut down during the read, and stopRecording() tried and
           // failed to join this thread. To be a bit safer, try to avoid calling any native methods
@@ -152,6 +161,10 @@ class WebRtcAudioRecord {
                   == AudioRecord.SUCCESS) {
                 captureTimeNs = audioTimestamp.nanoTime;
               }
+            }
+            if( isFirstRecord ){
+                Logging.d( TAG,"AudioRecord call nativeDataIsRecorded")
+                isFirstRecord = false;
             }
             nativeDataIsRecorded(nativeAudioRecord, bytesRead, captureTimeNs);
           }
